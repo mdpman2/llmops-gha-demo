@@ -53,11 +53,5 @@ jobs:
       run: az ml online-endpoint show -n ${{env.ENDPOINT_NAME}} -g ${{env.GROUP}} -w ${{env.WORKSPACE}}
     - name: Check the status of the deployment
       run: az ml online-deployment get-logs --name blue --endpoint-name ${{env.ENDPOINT_NAME}} -g ${{env.GROUP}} -w ${{env.WORKSPACE}}
-    - name: Get workspace ID
-      run: echo "WORKSPACE_ID=$(echo 'az ml workspace show --name ${{env.WORKSPACE}} --g ${{env.GROUP}} --query id -o tsv' >> "$GITHUB_ENV" 
-    - name: Get princpal ID
-      run: echo "PRINCPAL_ID=$(echo 'az ad sp list --filter "startswith(displayName,'chatpdf')" --query "[].{appId:id}" -o tsv' >> "$GITHUB_ENV"   
-    - name: Apply Auth for endpoint
-      run: az role assignment create --assignee ${{env.PRINCPAL_ID}} --role "Azure Machine Learning Workspace Connection Secrets Reader" --scope ${{env.WORKSPACE_ID}} 
     - name: Invoke model
       run: az ml online-endpoint invoke --name ${{env.ENDPOINT_NAME}} --request-file promptflow/deployment/sample-request.json  -g ${{env.GROUP}} -w ${{env.WORKSPACE}} 
